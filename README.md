@@ -8,4 +8,4 @@ So you can transfer it to another person or get it from another one.
 
 Secondly you can compare two databases with local database information file.
 
-You can download it from : [Database-Comprer](https://1drv.ms/u/s!Atj34aenYzzHoh9SFgKAzQsqjaU5)
+You can download it from : https://1drv.ms/u/s!Atj34aenYzzHoh9SFgKAzQsqjaU5
