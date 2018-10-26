@@ -110,7 +110,7 @@ namespace DatabaseComparer
             {
                 if (tablesTwo.Where(q => q == tiOne).Count() == 0)
                 {
-                    logger.Log($"First database doesn't have the table '{tiOne}'");
+                    logger.Log($"NOT EXIST IN SECOND DB: '{tiOne}'");
                     result &= false;
                 }
             }
@@ -118,7 +118,7 @@ namespace DatabaseComparer
             {
                 if (tablesOne.Where(q => q == tiTwo).Count() == 0)
                 {
-                    logger.Log($"Second database doesn't have the table '{tiTwo}'");
+                    logger.Log($"NOT EXIST IN FIRST DB: '{tiTwo}'");
                     result &= false;
                 }
             }
@@ -133,12 +133,12 @@ namespace DatabaseComparer
 
                 if (columnsTwo.Where(q => q.TableName == ciOne.TableName && q.ColumnName == ciOne.ColumnName).Count() == 0)
                 {
-                    logger.Log($"First database doesn't have  the column '{ciOne}'");
+                    logger.Log($"NOT EXIST IN SECOND DB: '{ciOne}'");
                     result &= false;
                 }
                 else if (columnsTwo.Where(q => q == ciOne).Count() == 0)
                 {
-                    logger.Log($"Second database's {ciOne.TableName} - {ciOne.ColumnName} isn't same with first the '{ciOne}'");
+                    logger.Log($"NOT SAME IN SECOND DB: '{ciOne}'");
                     result &= false;
                 }
             }
@@ -146,12 +146,12 @@ namespace DatabaseComparer
             {
                 if (columnsOne.Where(q => q.TableName == ciTwo.TableName && q.ColumnName == ciTwo.ColumnName).Count() == 0)
                 {
-                    logger.Log($"First database doesn't have  the column '{ciTwo}'");
+                    logger.Log($"NOT EXIST IN FIRST DB:  '{ciTwo}'");
                     result &= false;
                 }
                 else if (columnsOne.Where(q => q == ciTwo).Count() == 0)
                 {
-                    logger.Log($"First database's {ciTwo.TableName} - {ciTwo.ColumnName} isn't same with second the '{ciTwo}'");
+                    logger.Log($"NOT SAME IN FIRST DB: '{ciTwo}'");
                     result &= false;
                 }
             }
@@ -165,7 +165,7 @@ namespace DatabaseComparer
             {
                 if (indexesTwo.Where(q => q == iOne).Count() == 0)
                 {
-                    logger.Log($"First database doesn't have the index '{iOne}'");
+                    logger.Log($"NOT EXIST IN SECOND DB: '{iOne}'");
                     result &= false;
                 }
             }
@@ -173,7 +173,7 @@ namespace DatabaseComparer
             {
                 if (indexesOne.Where(q => q == iTwo).Count() == 0)
                 {
-                    logger.Log($"Second database doesn't have the index '{iTwo}'");
+                    logger.Log($"NOT EXIST IN FIRST DB: '{iTwo}'");
                     result &= false;
                 }
             }
@@ -188,7 +188,7 @@ namespace DatabaseComparer
             {
                 if (objectsTwo.Where(q => q.Name == ciOne.Name && q.Type == ciOne.Type).Count() == 0)
                 {
-                    logger.Log($"First database doesn't have  the '{ciOne}'");
+                    logger.Log($"NOT EXIST IN SECOND DB: {ciOne}");
                     result &= false;
                 }
                 else if (objectsTwo.Where(q => q.Name == ciOne.Name 
@@ -196,7 +196,7 @@ namespace DatabaseComparer
                                             && q.Definition == ciOne.Definition
                                             ).Count() == 0)
                 {
-                    logger.Log($"Second database's {ciOne.Name}'s definition isn't same with first '{ciOne}'");
+                    logger.Log($"NOT SAME IN SECOND DB: {ciOne}");
                     result &= false;
                 }
             }
@@ -204,7 +204,7 @@ namespace DatabaseComparer
             {
                 if (objectsOne.Where(q => q.Name == ciTwo.Name && q.Type == ciTwo.Type).Count() == 0)
                 {
-                    logger.Log($"First database doesn't have  the '{ciTwo}'");
+                    logger.Log($"NOT EXIST IN FIRST DB: '{ciTwo}'");
                     result &= false;
                 }
                 else if (objectsOne.Where(q => q.Name == ciTwo.Name
@@ -212,7 +212,7 @@ namespace DatabaseComparer
                                             && q.Definition == ciTwo.Definition
                                             ).Count() == 0)
                 {
-                    logger.Log($"First database's {ciTwo.Name}'s definition isn't same with second '{ciTwo}'");
+                    logger.Log($"NOT SAME IN FIRST DB: '{ciTwo}'");
                     result &= false;
                 }
             }
