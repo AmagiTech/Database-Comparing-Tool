@@ -1,0 +1,6 @@
+c:\users\developer\documents\visual studio 2015\Projects\DatabaseComparer\DatabaseComparer\bin\Debug\DatabaseComparer.exe.config
+c:\users\developer\documents\visual studio 2015\Projects\DatabaseComparer\DatabaseComparer\bin\Debug\DatabaseComparer.exe
+c:\users\developer\documents\visual studio 2015\Projects\DatabaseComparer\DatabaseComparer\bin\Debug\DatabaseComparer.pdb
+c:\users\developer\documents\visual studio 2015\Projects\DatabaseComparer\DatabaseComparer\obj\Debug\DatabaseComparer.exe
+c:\users\developer\documents\visual studio 2015\Projects\DatabaseComparer\DatabaseComparer\obj\Debug\DatabaseComparer.pdb
+C:\Users\developer\Documents\Visual Studio 2015\Projects\DatabaseComparer\DatabaseComparer\obj\Debug\DatabaseComparer.csprojResolveAssemblyReference.cache
