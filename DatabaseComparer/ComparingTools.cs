@@ -66,7 +66,6 @@ namespace DatabaseComparer
             result &= CheckServerCollation(diOne.ServerCollation, diTwo.ServerCollation, logger);
             result &= CheckDatabaseCollation(diOne.DatabaseCollation, diTwo.DatabaseCollation, logger);
             result &= CheckForTable(diOne.Tables, diTwo.Tables, logger);
-            result &= CheckForColumns(diOne.Columns, diTwo.Columns, logger);
             result &= CheckForIndexes(diOne.Indexes, diTwo.Indexes, logger);
             result &= CheckForObjects(diOne.Procedures, diTwo.Procedures, logger);
             result &= CheckForObjects(diOne.Triggers, diTwo.Triggers, logger);
@@ -104,41 +103,49 @@ namespace DatabaseComparer
 
         static bool CheckForTable(List<TableInfo> tablesOne, List<TableInfo> tablesTwo, ILogger logger)
         {
-            var result = true;
+            logger.Log(Environment.NewLine);
             logger.Log("Tables are checking!");
+            var result = true;
             foreach (var tiOne in tablesOne)
             {
                 if (tablesTwo.Where(q => q == tiOne).Count() == 0)
                 {
-                    logger.Log($"NOT EXIST IN SECOND DB: '{tiOne}'");
+                    logger.Log($"(*) TABLE IS NOT EXIST IN SECOND DB: '{tiOne}'");
                     result &= false;
                 }
+                else result &= CheckForColumns(tiOne.Columns
+                    , tablesTwo.SingleOrDefault(q => q.Name == tiOne.Name).Columns
+                    , logger);                
+
             }
+            logger.Log(Environment.NewLine);
             foreach (var tiTwo in tablesTwo)
             {
                 if (tablesOne.Where(q => q == tiTwo).Count() == 0)
                 {
-                    logger.Log($"NOT EXIST IN FIRST DB: '{tiTwo}'");
+                    logger.Log($"(*) TABLE IS NOT EXIST IN FIRST DB: '{tiTwo}'");
                     result &= false;
                 }
+                else result &= CheckForColumns(tiTwo.Columns
+                    , tablesOne.SingleOrDefault(q => q.Name == tiTwo.Name).Columns
+                    , logger);
             }
             return result;
         }
         static bool CheckForColumns(List<ColumnInfo> columnsOne, List<ColumnInfo> columnsTwo, ILogger logger)
         {
             var result = true;
-            logger.Log("Columns are checking!");
             foreach (var ciOne in columnsOne)
             {
 
                 if (columnsTwo.Where(q => q.TableName == ciOne.TableName && q.ColumnName == ciOne.ColumnName).Count() == 0)
                 {
-                    logger.Log($"NOT EXIST IN SECOND DB: '{ciOne}'");
+                    logger.Log($"(*) COLUMN IS NOT EXIST IN SECOND DB: '{ciOne}'");
                     result &= false;
                 }
                 else if (columnsTwo.Where(q => q == ciOne).Count() == 0)
                 {
-                    logger.Log($"NOT SAME IN SECOND DB: '{ciOne}'");
+                    logger.Log($"(!) COLUMN IS NOT SAME IN SECOND DB: '{ciOne}'");
                     result &= false;
                 }
             }
@@ -146,12 +153,12 @@ namespace DatabaseComparer
             {
                 if (columnsOne.Where(q => q.TableName == ciTwo.TableName && q.ColumnName == ciTwo.ColumnName).Count() == 0)
                 {
-                    logger.Log($"NOT EXIST IN FIRST DB:  '{ciTwo}'");
+                    logger.Log($"(*) COLUMN IS NOT EXIST IN FIRST DB:  '{ciTwo}'");
                     result &= false;
                 }
                 else if (columnsOne.Where(q => q == ciTwo).Count() == 0)
                 {
-                    logger.Log($"NOT SAME IN FIRST DB: '{ciTwo}'");
+                    logger.Log($"(!) COLUMN IS NOT SAME IN FIRST DB: '{ciTwo}'");
                     result &= false;
                 }
             }
@@ -160,12 +167,13 @@ namespace DatabaseComparer
         static bool CheckForIndexes(List<string> indexesOne, List<string> indexesTwo, ILogger logger)
         {
             var result = true;
-            logger.Log("Indexes are checking!");
+            logger.Log(Environment.NewLine);
+            logger.Log("Indexes are checking!");            
             foreach (var iOne in indexesOne)
             {
                 if (indexesTwo.Where(q => q == iOne).Count() == 0)
                 {
-                    logger.Log($"NOT EXIST IN SECOND DB: '{iOne}'");
+                    logger.Log($"(*) INDEX IS NOT EXIST IN SECOND DB: '{iOne}'");
                     result &= false;
                 }
             }
@@ -173,7 +181,7 @@ namespace DatabaseComparer
             {
                 if (indexesOne.Where(q => q == iTwo).Count() == 0)
                 {
-                    logger.Log($"NOT EXIST IN FIRST DB: '{iTwo}'");
+                    logger.Log($"(*) INDEX IS NOT EXIST IN FIRST DB: '{iTwo}'");
                     result &= false;
                 }
             }
@@ -183,12 +191,14 @@ namespace DatabaseComparer
         static bool CheckForObjects<T>(List<T> objectsOne, List<T> objectsTwo, ILogger logger) where T : SysObject
         {
             var result = true;
-            logger.Log("Objects are checking!");
+            var type = typeof(T).Name;
+            logger.Log(Environment.NewLine);            
+            logger.Log($"{type}s are checking!");
             foreach (var ciOne in objectsOne)
             {
                 if (objectsTwo.Where(q => q.Name == ciOne.Name && q.Type == ciOne.Type).Count() == 0)
                 {
-                    logger.Log($"NOT EXIST IN SECOND DB: {ciOne}");
+                    logger.Log($"(*) {type} IS NOT EXIST IN SECOND DB: {ciOne}");
                     result &= false;
                 }
                 else if (objectsTwo.Where(q => q.Name == ciOne.Name 
@@ -196,7 +206,7 @@ namespace DatabaseComparer
                                             && q.Definition == ciOne.Definition
                                             ).Count() == 0)
                 {
-                    logger.Log($"NOT SAME IN SECOND DB: {ciOne}");
+                    logger.Log($"(!) {type} IS NOT SAME IN SECOND DB: {ciOne}");
                     result &= false;
                 }
             }
@@ -204,7 +214,7 @@ namespace DatabaseComparer
             {
                 if (objectsOne.Where(q => q.Name == ciTwo.Name && q.Type == ciTwo.Type).Count() == 0)
                 {
-                    logger.Log($"NOT EXIST IN FIRST DB: '{ciTwo}'");
+                    logger.Log($"(*) {type} IS NOT EXIST IN FIRST DB: '{ciTwo}'");
                     result &= false;
                 }
                 else if (objectsOne.Where(q => q.Name == ciTwo.Name
@@ -212,7 +222,7 @@ namespace DatabaseComparer
                                             && q.Definition == ciTwo.Definition
                                             ).Count() == 0)
                 {
-                    logger.Log($"NOT SAME IN FIRST DB: '{ciTwo}'");
+                    logger.Log($"(!) {type} IS NOT SAME IN FIRST DB: '{ciTwo}'");
                     result &= false;
                 }
             }

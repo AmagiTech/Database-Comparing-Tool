@@ -10,7 +10,7 @@ namespace DatabaseComparer
     [Serializable]
     public class DatabaseInfo
     {
-        private readonly string connectionString;        
+        private readonly string connectionString;
         public DatabaseInfo(string connectionString)
         {
             this.connectionString = connectionString;
@@ -18,7 +18,6 @@ namespace DatabaseComparer
             ServerCollation = GetServerCollation();
             DatabaseCollation = GetDatabaseCollation();
             Tables = GetTables();
-            Columns = GetColumns();
             Indexes = GetIndexes();
             Procedures = GetSysObjects<Procedure>();
             Triggers = GetSysObjects<Trigger>();
@@ -31,7 +30,6 @@ namespace DatabaseComparer
         public string ServerCollation { get; }
         public string DatabaseCollation { get; }
         public List<TableInfo> Tables { get; }
-        public List<ColumnInfo> Columns { get; }
         public List<string> Indexes { get; }
         public List<Procedure> Procedures { get; }
         public List<Trigger> Triggers { get; }
@@ -62,30 +60,39 @@ namespace DatabaseComparer
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    result.Add(new TableInfo
+                    var ti = new TableInfo()
                     {
                         Catalog = reader.GetString(0),
                         Schema = reader.GetString(1),
                         Name = reader.GetString(2),
                         TableType = reader.GetString(3)
-                    });
+                    };
+                    foreach (var ci in GetColumns(ti.Name))
+                    {
+                        ti.Columns.Add(ci);
+                    }
+
+                    result.Add(ti);
                 }
             }
             return result;
         }
 
-        private List<ColumnInfo> GetColumns()
+        private IEnumerable<ColumnInfo> GetColumns(string tableName = "")
         {
-            var result = new List<ColumnInfo>();
-            var cmdText = "SELECT TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH,NUMERIC_PRECISION, NUMERIC_SCALE,DATETIME_PRECISION,COLLATION_NAME FROM INFORMATION_SCHEMA.COLUMNS ORDER BY TABLE_NAME,COLUMN_NAME";
+            var cmdText = "SELECT TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH,NUMERIC_PRECISION, NUMERIC_SCALE,DATETIME_PRECISION,COLLATION_NAME FROM INFORMATION_SCHEMA.COLUMNS"
+                + (string.IsNullOrWhiteSpace(tableName) ? " " : " WHERE TABLE_NAME = @tableName ")
+                + " ORDER BY TABLE_NAME,COLUMN_NAME ";
             using (var con = new SqlConnection(connectionString))
             using (var cmd = new SqlCommand(cmdText, con))
             {
                 con.Open();
+                if (!string.IsNullOrWhiteSpace(tableName))
+                    cmd.Parameters.AddWithValue("@tableName", tableName);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    result.Add(new ColumnInfo
+                    yield return new ColumnInfo
                     {
                         TableCatalog = reader.GetString(0),
                         TableSchema = reader.GetString(1),
@@ -99,10 +106,9 @@ namespace DatabaseComparer
                         NumericScale = GetValue<int?>("NUMERIC_SCALE", reader),
                         DateTimePrecision = GetValue<short?>("DATETIME_PRECISION", reader),
                         CollationName = GetValue<string>("COLLATION_NAME", reader),
-                    });
+                    };
                 }
             }
-            return result;
         }
 
         private List<string> GetIndexes()
@@ -131,7 +137,7 @@ namespace DatabaseComparer
             using (var cmd = new SqlCommand(cmdText, con))
             {
                 var t = new T();
-                cmd.Parameters.AddWithValue("@type",t.Type);
+                cmd.Parameters.AddWithValue("@type", t.Type);
                 con.Open();
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())

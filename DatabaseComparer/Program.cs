@@ -14,7 +14,7 @@ namespace DatabaseComparer
         {
             string logFile = "database-comparasion-results.log";
             var clogger = new ConsoleLogger();          
-            var logger = new Logger(clogger,new FileLogger(logFile));
+            var logger = new Logger(clogger,new FileLogger(logFile));            
             clogger.Log($"Log File Created:{logFile}");
             var response = string.Empty;
             do
